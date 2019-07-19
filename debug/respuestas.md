@@ -77,11 +77,11 @@ en que linea ocurre el error. Una vez identificada la linea con error, revisar l
 
 
 **Para cada uno de los ejecutables, ¿qué hace agregar la opción -DTRAPFPE al compilar?**
-El flag `-D` en la compilación seguida de TRAPFPEincluira en la compilación del programa el 
+El flag `-D` en la compilación seguida de TRAPFPE incluira en la compilación del programa el 
 siguiente código
 ```
 #ifdef TRAPFPE
-  set_fpe_x87_sse();
+set_fpe_x87_sse();
 #endif 
 ```
 Esto sirve para seleccionar si la función set_fpe_x87_sse se utilizará o no en el programa al momento de compilar.
@@ -95,3 +95,73 @@ los programas devuelven resultados como *inf* o *nan* según corresponda.
 *La salida de los programas cuando con la opción:*
 Cuando los programas se compilan con esta opción y se introduce una entrada prohibida,
 los programas devuelven un mensaje de error *Floating point exception*.
+
+
+## Segmentation Fault
+**Identifiquen los errores que devuelven al ejecutar por primera vez**
+El error que ocurre al ejecutar `./big.e` es:
+*Segmentation fault (core dumped)*
+Al ejecutar `./small.e` no devuelve ningún error.
+
+### Ejecutando ulimit -s unlimited y volviendo a correr el programa**
+**¿Devuelven el mismo error que antes?**
+No, pero big.e queda ejecutandose inlimitadamente.
+
+**Averigüen qué hicieron al ejecutar la sentencia ulimit -s unlimited.**
+*Algunas pistas son: abran otra terminal distinta y fíjense si vuelve al mismo error, fíjense*
+*la diferencia entre ulimit -a antes y después de ejecutar ulimit -s unlimited, googleen, etcétera*
+Al abrir una nueva terminal y ejecutar nuevamente big.e, el programa devuelve nuevamente el error
+inicial. Claramenre el comando `ulimit -s unlimited` no modifica el archivo .e
+Lo que hacemos es darle stack ilimitado al programa. Esto puede verse ejecutando ulimit -a
+antes y despues del comando.
+Primero veremos esto:
+`stack size              (kbytes, -s) 8192`
+y despues veremos esto:
+`stack size              (kbytes, -s) unlimited`
+
+**La "solución" anterior, ¿es una solución en el sentido de debugging?**
+No, porque no resuelve los problemas del programa internamente.
+
+**¿Cómo harían una solución más robusta que la anterior, que no requiera tocar los ulimits?**
+
+
+## Valgrind
+El tipo de problemas que detecta incluye principalmente: (1) uso de memoria sin inicializar, 
+(2) lectura/escritura de memoría después de que se libere, (3) lectura/escritura en secciones 
+ilegales, y (4) potenciales fugas de memoria. 
+
+**Describan el error y por qué sucede**
+Los errores que devuelve cuando ejecutamos `source1.e` con valgrind son dos. Uno es un error
+de fuga que genera la perdida de 12.000.000 bytes en 3 bloques y el otro es una posible fuga de 
+4.000.000 bytes en 1 bloque.
+
+Los errores que devuelve cuando ejecutamos `test_oob4.e` con valgrind son dos. Uno es un error
+de fuga que genera la perdida de 200 millones de bytes en 5 bloques y el otro es una posible fuga de 
+12.000.000 bytes en 3 bloques.
+
+
+## Funny
+En la carpeta funny/ hay un código de C. Describan las diferencias de los ejecutables al compilar 
+con y sin el flag -DDEBUG. 
+
+**¿De dónde vienen esas diferencias?**
+Cuando compilo sin el flag, no se habilitan las partes del codigo que trabajan con otra memoria alocada.
+Al habilitar el flag `-DDEBUG` incluyo en la compilación la creación de un string alocado de 1024 valores
+que contiene los caracteres *I'm HERE !!!!* 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
