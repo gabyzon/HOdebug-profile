@@ -3,7 +3,7 @@
 ## Varios Bugs
 
 ### Corriendo el programa con un debugger, sin agregar flags de debug. 
-**¿Tienen toda la información que requerían? **
+**¿Tienen toda la información que requerían?**
 *En el ejercicio segfault:*
 Si compilo el programa sin agregar flag de debug, el programa no compila y nos 
 informa que hubo un problema de acceso de memoria.
@@ -76,7 +76,22 @@ en que linea ocurre el error. Una vez identificada la linea con error, revisar l
 **¿Qué función requiere agregar -DTRAPFPE? ¿Cómo pueden hacer que el programa linkee adecuadamente?**
 
 
-**Para cada uno de los ejecutables, ¿qué hace agregar la opción -DTRAPFPE al compilar? ¿En qué se diferencian los mensajes de salida de los programas con y sin esa opción cuando tratan de hacer una operación matemática prohbida, como dividir por 0 o calcular la raíz cuadrada de un número negativo?**
+**Para cada uno de los ejecutables, ¿qué hace agregar la opción -DTRAPFPE al compilar?**
+El flag `-D` en la compilación seguida de TRAPFPEincluira en la compilación del programa el 
+siguiente código
+```
+#ifdef TRAPFPE
+  set_fpe_x87_sse();
+#endif 
+```
+Esto sirve para seleccionar si la función set_fpe_x87_sse se utilizará o no en el programa al momento de compilar.
+Podemos decir que se habilita una porción de código.
 
+**¿En qué se diferencian los mensajes de salida de los programas con y sin esa opción cuando tratan de hacer una operación matemática prohbida, como dividir por 0 o calcular la raíz cuadrada de un número negativo?**
+*La salida de los programas cuando sin la opción:*
+Cuando los programas se compilan sin esta opción y se introduce una entrada prohibida,
+los programas devuelven resultados como *inf* o *nan* según corresponda.
 
-
+*La salida de los programas cuando con la opción:*
+Cuando los programas se compilan con esta opción y se introduce una entrada prohibida,
+los programas devuelven un mensaje de error *Floating point exception*.
